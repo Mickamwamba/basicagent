@@ -1,6 +1,7 @@
 import os 
 from smolagents import OpenAIServerModel,CodeAgent,tool,DuckDuckGoSearchTool
-from tools import GoogleSearchTool
+from tools import CustomTools
+import gradio as gr 
 
 class BasicAgent: 
 
@@ -20,11 +21,11 @@ class BasicAgent:
             api_key=os.getenv("OPEN_AI_API_KEY")
         )
         sample_tool = self.sample_tool
-        # search_tool = DuckDuckGoSearchTool()
-        search_tool = GoogleSearchTool.search
+        search_tool = CustomTools.search
+        match_tool = CustomTools.matches
         code_agent = CodeAgent(
             model=model, 
-            tools=[sample_tool,search_tool]
+            tools=[sample_tool,search_tool,match_tool]
         )
 
         response = code_agent.run(question)
@@ -33,9 +34,13 @@ class BasicAgent:
     
 
 
-agent = BasicAgent()
+def llmResponse(message, history): 
+    agent = BasicAgent()
+    return agent(message)
 
 
-agent("Who is Michael Jackson?")
-
-# print(GoogleSearchTool.search("Who is Michael Jackson"))
+gr.ChatInterface(
+    fn=llmResponse, 
+    type="messages",
+    save_history=True
+).launch()
