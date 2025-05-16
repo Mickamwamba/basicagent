@@ -7,7 +7,8 @@ import gradio as gr
 
 class BasicLammaAgent: 
     def __init__(self):
-        api_key = "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" 
+
+        api_key = os.getenv("OPEN_AI_KEY")
         self.llm = OpenAI(model="gpt-4o", api_key=api_key)
         football_tool = CustomTools.matches
 
